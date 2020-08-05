@@ -1,0 +1,38 @@
+/subsystem=elytron/key-store=clientKS1:add(path=/home/skylar/work/projects/dynamicsslcontexttest/certs/client1.keystore.jks,credential-reference={clear-text=secret},type=JKS)
+
+/subsystem=elytron/key-store=clientTS1:add(path=/home/skylar/work/projects/dynamicsslcontexttest/certs/client1.truststore.jks,credential-reference={clear-text=secret},type=JKS)
+
+/subsystem=elytron/key-store=clientKS2:add(path=/home/skylar/work/projects/dynamicsslcontexttest/certs/client2.keystore.jks,credential-reference={clear-text=secret},type=JKS)
+
+/subsystem=elytron/key-store=clientTS2:add(path=/home/skylar/work/projects/dynamicsslcontexttest/certs/client2.truststore.jks,credential-reference={clear-text=secret},type=JKS)
+
+/subsystem=elytron/key-manager=clientKM1:add(key-store=clientKS1,credential-reference={clear-text=secret})
+
+/subsystem=elytron/trust-manager=clientTM1:add(key-store=clientTS1)
+
+/subsystem=elytron/trust-manager=clientTM2:add(key-store=clientTS2)
+
+/subsystem=elytron/key-manager=clientKM2:add(key-store=clientKS2,credential-reference={clear-text=secret})
+
+/subsystem=elytron/client-ssl-context=client1-ssl-context:add(key-manager=clientKM1,protocols=["TLSv1.2"],trust-manager=clientTM1)
+
+/subsystem=elytron/client-ssl-context=client2-ssl-context:add(key-manager=clientKM2,protocols=["TLSv1.2"],trust-manager=clientTM2)
+
+# configure dynamic-client-ssl-context
+/subsystem=elytron/authentication-context=a:add(match-rules=[{match-port=9443,ssl-context=client1-ssl-context},{match-port=10443,ssl-context=client2-ssl-context}])
+
+/subsystem=elytron/dynamic-client-ssl-context=dynamicClientSSLContext:add(authentication-context=a)
+
+# reverse-proxies configuration
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=my-socket:add(host=localhost,port=9443)
+/subsystem=undertow/configuration=handler/reverse-proxy=my-proxy:add()
+/subsystem=undertow/configuration=handler/reverse-proxy=my-proxy/host=localhost:add(outbound-socket-binding=my-socket,ssl-context=dynamicClientSSLContext,scheme=https)
+/subsystem=undertow/server=default-server/host=default-host/location=\/proxy:add(handler=my-proxy)
+
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=my-socket2:add(host=localhost,port=10443)
+/subsystem=undertow/configuration=handler/reverse-proxy=my-proxy2:add()
+/subsystem=undertow/configuration=handler/reverse-proxy=my-proxy2/host=localhost:add(outbound-socket-binding=my-socket2,ssl-context=dynamicClientSSLContext,scheme=https)
+/subsystem=undertow/server=default-server/host=default-host/location=\/proxy2:add(handler=my-proxy2)
+
+# Reload the instance
+reload
