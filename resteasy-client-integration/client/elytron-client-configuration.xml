@@ -29,9 +29,9 @@
         <authentication-configurations>
             <configuration name="auth-config">
                 <set-user-name name="jane"/>
-                <credentials>
-                    <clear-password password="passwordJane"/>
-                </credentials>
+                <!--<credentials>-->
+                    <!--<clear-password password="passwordJane"/>-->
+                <!--</credentials>-->
             </configuration>
         </authentication-configurations>
     </authentication-client>
