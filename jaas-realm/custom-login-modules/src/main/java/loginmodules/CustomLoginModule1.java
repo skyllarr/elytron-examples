@@ -16,27 +16,32 @@
 
 package loginmodules;
 
-import org.wildfly.security.auth.principal.NamePrincipal;
-
+import javax.ejb.EJB;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.security.auth.Subject;
-import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
-import java.io.IOException;
+//import javax.ws.rs.core.Context;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import manual.test.SimpleSecuredEJB;
 
 /**
  * A {@link LoginModule} implementation used in the JAAS security realm tests. It uses a static
  * map of username -> password to determine if a login is successful or not.
  */
 public class CustomLoginModule1 implements LoginModule {
+
+    @EJB
+    private SimpleSecuredEJB simpleSecuredEJB;
+
+//    @Context
+//    private SecurityContext securityContext;
 
     private final Map<String, char[]> usersMap = new HashMap<String, char[]>();
     private Principal principal;
@@ -52,26 +57,40 @@ public class CustomLoginModule1 implements LoginModule {
 
     @Override
     public boolean login() throws LoginException {
-        // obtain the incoming username and password from the callback handler
-        NameCallback nameCallback = new NameCallback("Username");
-        PasswordCallback passwordCallback = new PasswordCallback("Password", false);
-        Callback[] callbacks = new Callback[]{nameCallback, passwordCallback};
+//        return securityContext.getCallerPrincipal().getName().equals("user3");
+//        return securityContext.isCallerInRole("aa") ?  true :  false;
+        Properties env = new Properties();
+        env.setProperty(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
+        InitialContext context = null;
         try {
-            this.handler.handle(callbacks);
-        } catch (UnsupportedCallbackException | IOException e) {
-            throw new LoginException("Error handling callback: " + e.getMessage());
-        }
+            context = new InitialContext(env);
 
-        final String username = nameCallback.getName();
-        this.principal = new NamePrincipal(username);
-        final char[] password = passwordCallback.getPassword();
-
-        char[] storedPassword = this.usersMap.get(username);
-        if (!Arrays.equals(storedPassword, password)) {
-            throw new LoginException("Invalid password");
-        } else {
-            return true;
+        simpleSecuredEJB = (SimpleSecuredEJB) context.lookup("java:global/jax-rs-basic-auth/SimpleSecuredEJBImpl");
+        } catch (NamingException e) {
+            e.printStackTrace();
         }
+        return simpleSecuredEJB.accessRunAsLoginModuleRole();
+//        simpleSecuredEJB.accessRunAsLoginModuleRole();
+//        // obtain the incoming username and password from the callback handler
+//        NameCallback nameCallback = new NameCallback("Username");
+//        PasswordCallback passwordCallback = new PasswordCallback("Password", false);
+//        Callback[] callbacks = new Callback[]{nameCallback, passwordCallback};
+//        try {
+//            this.handler.handle(callbacks);
+//        } catch (UnsupportedCallbackException | IOException e) {
+//            throw new LoginException("Error handling callback: " + e.getMessage());
+//        }
+//
+//        final String username = nameCallback.getName();
+//        this.principal = new NamePrincipal(username);
+//        final char[] password = passwordCallback.getPassword();
+//
+//        char[] storedPassword = this.usersMap.get(username);
+//        if (!Arrays.equals(storedPassword, password)) {
+//            throw new LoginException("Invalid password");
+//        } else {
+//            return true;
+//        }
     }
 
     @Override
