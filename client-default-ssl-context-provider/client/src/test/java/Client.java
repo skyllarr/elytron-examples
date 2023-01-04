@@ -42,7 +42,7 @@ public class Client {
         Security.insertProviderAt(new WildFlyElytronClientDefaultSSLContextProvider("src/test/wildfly-config-two-way-tls.xml"), 1);
         ResteasyClient client = new ResteasyClientBuilderImpl().sslContext(SSLContext.getDefault()).hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY).build();
         Response response = client
-                .target("https://127.0.0.1:8443/client-default-ssl-context-provider/rest/hello")
+                .target("https://127.0.0.1:8443/client-default-ssl-context-endpoint/rest/hello")
                 .request().get();
         Assert.assertNotNull(response);
         Assert.assertEquals(200, response.getStatus());
