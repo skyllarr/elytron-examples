@@ -17,6 +17,8 @@
  */
 package org.wildfly.security.examples;
 
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
+import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.wildfly.common.bytes.ByteStringBuilder;
 import org.wildfly.security.keystore.KeyStoreUtil;
 import org.wildfly.security.pem.Pem;
@@ -40,6 +42,7 @@ import org.junit.Assert;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.io.FileInputStream;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 /**
@@ -59,6 +62,11 @@ public class SSLUtilsTest {
 
     public static void main(String[] args) throws Exception {
 
+        Security.insertProviderAt(new BouncyCastleFipsProvider(),1);
+        Security.insertProviderAt(new BouncyCastleJsseProvider("fips:BCFIPS"),2);
+        System.out.println("First provider: " + Arrays.asList(Security.getProviders()[0]));
+        System.out.println("Second provider:" + Arrays.asList(Security.getProviders()[1]));
+        System.out.println("SSLContext details:");
 
         SelfSignedX509CertificateAndSigningKey ca = SelfSignedX509CertificateAndSigningKey.builder()
                 .setDn(new X500Principal("O=Root Certificate Authority, EMAILADDRESS=elytron@wildfly.org, C=UK, ST=Elytron, CN=Elytron CA"))
