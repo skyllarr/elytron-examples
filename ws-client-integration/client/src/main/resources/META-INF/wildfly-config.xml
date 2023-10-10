@@ -7,11 +7,11 @@
         </authentication-rules>
         <key-stores>
             <key-store name="truststore" type="JKS">
-                <file name="/path/to/client.truststore.jks"/>
+                <file name="../client-wf18-jks/client.truststore.jks"/>
                 <key-store-clear-password password="secret"/>
             </key-store>
             <key-store name="keystore" type="JKS">
-                <file name="/path/to/client.keystore.jks"/>
+		    <file name="../client-wf18-jks/client.keystore.jks"/>
                 <key-store-clear-password password="secret"/>
             </key-store>
         </key-stores>
