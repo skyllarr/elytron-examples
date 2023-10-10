@@ -1,0 +1,22 @@
+$ cd ~
+$ unzip wildfly-29.0.1.Final.zip 
+$ ln -s wildfly-29.0.1.Final wf29
+
+$ rm -rf ~/.m2
+$ mvn -version 
+Apache Maven 3.9.5 (57804ffe001d7215b5e7bcb531cf83df38f93546)
+Maven home: /home/vagrant/.sdkman/candidates/maven/current
+Java version: 11.0.20, vendor: Eclipse Adoptium, runtime: /home/vagrant/.sdkman/candidates/java/11.0.20-tem
+Default locale: en_US, platform encoding: ANSI_X3.4-1968
+OS name: "linux", version: "4.18.0-477.27.1.el8_8.x86_64", arch: "amd64", family: "unix"
+
+$ git clone https://github.com/gerjantd/elytron-examples.git
+$ cd ~/elytron-examples/ws-client-integration/
+$ git checkout ELY-2656-wf29
+$ ~/wf29/bin/standalone.sh -Djboss.server.base.dir=./standalone-wf29-jks
+
+$ cd ~/elytron-examples/ws-client-integration/server
+$ mvn clean package install wildfly:deploy
+
+$ cd ~/elytron-examples/ws-client-integration/client
+$ mvn clean install -Dtest=Client.java
