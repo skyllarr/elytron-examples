@@ -6,12 +6,12 @@
             <rule use-configuration="auth-config" />
         </authentication-rules>
         <key-stores>
-            <key-store name="truststore" type="JKS">
-                <file name="../client-wf18-jks/client.truststore.jks"/>
+            <key-store name="truststore" type="PKCS12">
+                <file name="../client-wf29-jks/client.truststore.pkcs12"/>
                 <key-store-clear-password password="secret"/>
             </key-store>
-            <key-store name="keystore" type="JKS">
-		    <file name="../client-wf18-jks/client.keystore.jks"/>
+            <key-store name="keystore" type="PKCS12">
+                <file name="../client-wf29-jks/client.keystore.pkcs12"/>
                 <key-store-clear-password password="secret"/>
             </key-store>
         </key-stores>
