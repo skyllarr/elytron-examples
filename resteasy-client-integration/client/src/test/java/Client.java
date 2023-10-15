@@ -16,8 +16,7 @@ public class Client {
 
     @Test
     public void test() {
-        ((ResteasyClientBuilder)ClientBuilder.newBuilder()).hostnameVerifier(NoopHostnameVerifier.INSTANCE);
-        ResteasyClient sslClient = (ResteasyClient) ResteasyClientBuilder.newClient();
+        ResteasyClient sslClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).hostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
         Response response = sslClient.target("https://127.0.0.1:8443/resteasy-client-integration-example/rest/hello").request().get();
         Assert.assertNotNull(response);
         Assert.assertEquals(response.getStatus(), 200);
