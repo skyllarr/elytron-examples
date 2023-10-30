@@ -14,13 +14,20 @@
     limitations under the License.
 -->
 <web-app>
-<security-constraint>
-    <web-resource-collection>
-        <url-pattern>/HelloService/*</url-pattern>
-    </web-resource-collection>
-</security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/HelloService/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>**</role-name>
+        </auth-constraint>
+    </security-constraint>
 
-<welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-</welcome-file-list>
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>exampleFsSD</realm-name>
+    </login-config>
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
 </web-app>
